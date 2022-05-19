@@ -1,4 +1,5 @@
 const productModel = require('../models/productModel')
+const ApiFeatures = require('../utils/apifeatures')
 // Creating new products
 exports.createProduct = async (req, res) => {
     try {
@@ -12,7 +13,7 @@ exports.createProduct = async (req, res) => {
         console.dir(error)
         res.status(500).json({
             success: false,
-            message: 'Internal server error'
+            message: error.message
         })
     }
 }
@@ -35,7 +36,7 @@ exports.updateProduct = async (req, res) => {
                 })
             }
             if (product) {
-                product = await productModel.findByIdAndUpdate(id, req.body, { new: true })
+                product = await productModel.findByIdAndUpdate(id, req.body, { new: true, runValidators:true })
                 res.status(200).json({
                     success: true,
                     product
@@ -47,7 +48,7 @@ exports.updateProduct = async (req, res) => {
         console.dir(error)
         res.status(500).json({
             success: false,
-            message: 'Internal server error'
+            message: error.message
         })
     }
 }
@@ -81,7 +82,7 @@ exports.fetchProductDetails = async (req, res) => {
         console.dir(error)
         res.status(500).json({
             success: false,
-            message: 'Internal server error'
+            message: error.message
         })
     }
 }
@@ -116,24 +117,28 @@ exports.deleteProduct = async (req, res) => {
         console.dir(error)
         res.status(500).json({
             success: false,
-            message: 'Internal server error'
+            message: error.message
         })
     }
 }
 // Fetching all products
 exports.getProducts = async (req, res) => {
     try {
-        const products = await productModel.find()
+        const resultPerPage = 7
+        const apiFeatures = new ApiFeatures(productModel.find(),req.query).search().filter().pagination(resultPerPage)
+        const products = await apiFeatures.query
+        const productsCount = await productModel.countDocuments()
         res.status(200).json({
             success: true,
-            products
+            products,
+            productsCount
         })
     } catch (error) {
         console.log('Getting error while fetching all products')
         console.dir(error)
         res.status(500).json({
             success: false,
-            message: 'Internal server error'
+            message: error.message
         })
     }
 }
