@@ -17,10 +17,13 @@ class ApiFeatures {
         let filterCopy = { ...this.queryStr }
         let removeQuery = ["keyword", "page", "limit"]
         removeQuery.forEach(key => delete filterCopy[key])
-        this.query = this.query.find(filterCopy)
+
+        filterCopy = JSON.stringify(filterCopy).replace(/\b(lte|gte|gt|lt)\b/g, key => key === "lt" || key === "gt" ? `$${key}e` : `$${key}`)
+
+        this.query = this.query.find(JSON.parse(filterCopy))
         return this
     }
-    pagination(resultPerPage){
+    pagination(resultPerPage) {
         let currentPage = Number(this.queryStr.page) || 1
         let skip = resultPerPage * (currentPage - 1)
         this.query = this.query.limit(resultPerPage).skip(skip)
