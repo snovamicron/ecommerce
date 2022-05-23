@@ -1,8 +1,7 @@
 const express = require('express')
-const { registerUser, singinUser, fetchUser } = require('../controller/userController')
-const { authTokenMatch } = require('../middleware/userMiddleware')
+const { registerUser, loginUser, logout } = require('../controller/userController')
 const router = express.Router()
 router.route('/user/register').post(registerUser)
-router.route('/user/singin').post(singinUser)
-router.route('/user').get(authTokenMatch, fetchUser)
+router.route('/user/login').post(loginUser)
+router.route('/user/logout').get(logout)
 module.exports = router

@@ -33,13 +33,13 @@ const userSchema = new mongoose.Schema({
     },
     role:{
         type:String,
-        default:'User'
+        default:'user'
     },
     resetPasswordToken:String,
     resetPasswordExpire:String,
 },{ timestamps: true})
 
-// Incrypt password
+// Encrypt password
 userSchema.pre("save", async function(next){
     if(!this.isModified("password")){
         next()
