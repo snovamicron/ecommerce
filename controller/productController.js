@@ -3,6 +3,7 @@ const ApiFeatures = require('../utils/apifeatures')
 // Creating new products
 exports.createProduct = async (req, res) => {
     try {
+        req.body.user = req.user.id
         const product = await productModel.create(req.body)
         res.status(200).json({
             success: true,
