@@ -1,5 +1,8 @@
+const crypto = require("crypto")
+const res = require('express/lib/response')
 const userModel = require('../models/userModel')
 const sendToken = require('../utils/jwtTokenGenerator')
+const sendMail = require('../utils/resetPasswordMail')
 // Register a new user
 exports.registerUser = async (req, res) => {
     try {
@@ -14,7 +17,7 @@ exports.registerUser = async (req, res) => {
                 name, email, password, avatar
             })
         } catch (error) {
-           return error.code === 11000 ?
+            return error.code === 11000 ?
                 res.status(400).json({
                     success: false,
                     message: 'Email already registered'
@@ -79,26 +82,129 @@ exports.logout = (req, res) => {
         expires: new Date(Date.now())
     }
     const { token } = req.cookies
-    if(!token){
+    if (!token) {
         return res.status(400).json({
             success: false,
             message: "User not logged in"
         })
     }
-   try {
+    try {
         res.status(200).cookie('token', null, options).json({
-            success: true, 
+            success: true,
             message: "Logged out successfully"
-        })       
-   } catch (error) {
-       console.log("Getting error while logout")
-       console.dir(error)
-       res.status(500).json({
-           success: false,
-           message:"Internal server error"
-       })
-   }
+        })
+    } catch (error) {
+        console.log("Getting error while logout")
+        console.dir(error)
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
 }
+
+// forgot password
+exports.forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body
+        const user = await userModel.findOne({ email })
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            })
+        }
+        const resetToken = user.getResetPasswordToken()
+        await user.save({ validateBeforeSave: false })
+        const resetPasswordUrl = `${req.protocol}://${req.get("host")}/api/v1/user/password/reset/${resetToken}`
+        const message = `To reset your password click this link:${resetPasswordUrl}\n\nIf you have not requested this mail then please ignore it`
+        try {
+            await sendMail({
+                email,
+                subject: "E-Commerce password recovery",
+                message
+            })
+            res.status(200).json({
+                success: true,
+                message: `check the email ${email} we send the reset password to this mail address`
+            })
+        } catch (error) {
+            user.resetPasswordToken = undefined
+            user.resetPasswordExpire = undefined
+            await user.save()
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            })
+        }
+    } catch (error) {
+        console.log("Getting error while try to send reset password mail")
+        console.error(error)
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+}
+
+
+// reset password
+exports.resetPassword = async (req, res) => {
+    try {
+        const { token } = req.params
+        const { newPassword, confirmPassword } = req.body
+        const resetPasswordToken = crypto.createHash("sha256").update(token).digest("hex")
+        const user = await userModel.findOne({
+            resetPasswordToken,
+            resetPasswordExpire: { $gt: Date.now() }
+        })
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "Reset password token invalid or has been expired"
+            })
+        }
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "password dose not match"
+            })
+        }
+        try {
+            user.password = newPassword
+            user.resetPasswordToken = undefined
+            user.resetPasswordExpire = undefined
+            await user.save()
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            })
+        }
+        res.status(200).json({
+            success: true,
+            message: "Password has changed successfully"
+        })
+    } catch (error) {
+        console.log("Getting error while try to reset password")
+        console.error(error)
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
