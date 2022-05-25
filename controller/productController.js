@@ -1,5 +1,5 @@
 const productModel = require('../models/productModel')
-const ApiFeatures = require('../utils/apifeatures')
+const ApiFeatures = require('../utils/apiFeatures')
 // Creating new products
 exports.createProduct = async (req, res) => {
     try {
@@ -18,34 +18,30 @@ exports.createProduct = async (req, res) => {
         })
     }
 }
-// Updating a exsiting product
+// Updating a existing product
 exports.updateProduct = async (req, res) => {
     try {
         const { id } = req.params
         if (!id) {
-            res.status(400).json({
+            return res.status(400).json({
                 success: false,
                 message: 'Id not found please enter an id of product'
             })
         }
-        if (id) {
-            let product = await productModel.findById(id).exec()
-            if (!product) {
-                res.status(404).json({
-                    success: false,
-                    message: 'Product not found'
-                })
-            }
-            if (product) {
-                product = await productModel.findByIdAndUpdate(id, req.body, { new: true, runValidators:true })
-                res.status(200).json({
-                    success: true,
-                    product
-                })
-            }
+        let product = await productModel.findById(id).exec()
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
+            })
         }
+        product = await productModel.findByIdAndUpdate(id, req.body, { new: true, runValidators: true })
+        res.status(200).json({
+            success: true,
+            product
+        })
     } catch (error) {
-        console.log('Getting error while updating a exsiting product')
+        console.log('Getting error while updating a existing product')
         console.dir(error)
         res.status(500).json({
             success: false,
@@ -53,33 +49,29 @@ exports.updateProduct = async (req, res) => {
         })
     }
 }
-// Fetching a exsiting product details
+// Fetching a existing product details
 exports.fetchProductDetails = async (req, res) => {
     try {
         const { id } = req.params
         if (!id) {
-            res.status(400).json({
+            return res.status(400).json({
                 success: false,
                 message: 'Id not found please enter an id of product'
             })
         }
-        if (id) {
-            let product = await productModel.findById(id).exec()
-            if (!product) {
-                res.status(404).json({
-                    success: false,
-                    message: 'Product not found'
-                })
-            }
-            if (product) {
-                res.status(200).json({
-                    success: true,
-                    product
-                })
-            }
+        let product = await productModel.findById(id).exec()
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
+            })
         }
+        res.status(200).json({
+            success: true,
+            product
+        })
     } catch (error) {
-        console.log('Getting error while updating a exsiting product')
+        console.log('Getting error while updating a existing product')
         console.dir(error)
         res.status(500).json({
             success: false,
@@ -87,32 +79,28 @@ exports.fetchProductDetails = async (req, res) => {
         })
     }
 }
-// Deleteing a exsiting product details
+// Deleting a existing product details
 exports.deleteProduct = async (req, res) => {
     try {
         const { id } = req.params
         if (!id) {
-            res.status(400).json({
+            return res.status(400).json({
                 success: false,
                 message: 'Id not found please enter an id of product'
             })
         }
-        if (id) {
-            let product = await productModel.findById(id).exec()
-            if (!product) {
-                res.status(404).json({
-                    success: false,
-                    message: 'Product not found'
-                })
-            }
-            if (product) {
-                 await productModel.findByIdAndRemove(id)
-                res.status(200).json({
-                    success: true,
-                    message: 'Deleted the product successfully'
-                })
-            }
+        let product = await productModel.findById(id).exec()
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
+            })
         }
+        await productModel.findByIdAndRemove(id)
+        res.status(200).json({
+            success: true,
+            message: 'Deleted the product successfully'
+        })
     } catch (error) {
         console.log('Getting error while updating a exsiting product')
         console.dir(error)
@@ -126,7 +114,7 @@ exports.deleteProduct = async (req, res) => {
 exports.getProducts = async (req, res) => {
     try {
         const resultPerPage = 7
-        const apiFeatures = new ApiFeatures(productModel.find(),req.query).search().filter().pagination(resultPerPage)
+        const apiFeatures = new ApiFeatures(productModel.find(), req.query).search().filter().pagination(resultPerPage)
         const products = await apiFeatures.query
         const productsCount = await productModel.countDocuments()
         res.status(200).json({

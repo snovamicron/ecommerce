@@ -1,4 +1,5 @@
 const crypto = require("crypto")
+const { is } = require("express/lib/request")
 const res = require('express/lib/response')
 const userModel = require('../models/userModel')
 const sendToken = require('../utils/jwtTokenGenerator')
@@ -75,7 +76,7 @@ exports.loginUser = async (req, res) => {
     }
 }
 
-
+// logout a user
 exports.logout = (req, res) => {
     const options = {
         httpOnly: true,
@@ -194,6 +195,80 @@ exports.resetPassword = async (req, res) => {
         })
     }
 }
+
+
+// get user details
+exports.getUserDetails = async (req, res)=>{
+    try {
+        const user = await userModel.findOne({id: req.user._id})
+        res.status(200).json({
+            success: true, 
+            user
+        })
+    } catch (error) {
+        console.log("Getting error while fetching user details")
+        console.error(error)
+        return res.status(500).json({
+            success: false, 
+            message: "Internal error"
+        })
+    }
+}
+
+
+// update user password
+exports.updateUserPassword = async(req, res)=>{
+    try {
+        const { oldPassword, newPassword } = req.body
+        if(!oldPassword || !newPassword){
+            return res.status(400).json({
+                success: false,
+                message: "Please enter old password and the new password"
+            })
+        }
+        const user = await userModel.findOne({id: req.user._id}).select("+password")
+        const isPasswordMatched = await user.matchPassword(oldPassword)
+        if(!isPasswordMatched){
+            return res.status(400).json({
+                success: false,
+                message: "Invalid old password"
+            })
+        }
+        user.password = newPassword
+        try {
+            await user.save()
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            })           
+        }
+        const options = {
+            httpOnly: true,
+            expires: new Date(Date.now())
+        }
+        res.status(200).cookie('token', null, options).json({
+            success: true,
+            message: "Password updated successfully please log in with new password"
+        })
+    } catch (error) {
+      console.log("Getting error while updating user password")
+      console.error(error)
+      return res.status(500).json({
+          success: false, 
+          message: "Internal server error"
+      })   
+    }
+}
+
+
+
+
+
+
+
+
+
 
 
 

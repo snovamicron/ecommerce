@@ -1,4 +1,4 @@
-const { rawListeners } = require("../models/userModel")
+
 
 const authenticateRoles = (...roles) => {
     return (req, res, next) => {
@@ -13,3 +13,6 @@ const authenticateRoles = (...roles) => {
 }
 
 module.exports = authenticateRoles
+
+
+
