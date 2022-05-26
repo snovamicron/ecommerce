@@ -18,7 +18,7 @@ class ApiFeatures {
         let removeQuery = ["keyword", "page", "limit"]
         removeQuery.forEach(key => delete filterCopy[key])
 
-        filterCopy = JSON.stringify(filterCopy).replace(/\b(lte|gte|gt|lt)\b/g, key => key === "lt" || key === "gt" ? `$${key}e` : `$${key}`)
+        filterCopy = JSON.stringify(filterCopy).replace(/\b(lte|gte|gt|lt)\b/g, key => `$${key}`)
 
         this.query = this.query.find(JSON.parse(filterCopy))
         return this

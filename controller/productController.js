@@ -1,6 +1,6 @@
 const productModel = require('../models/productModel')
 const ApiFeatures = require('../utils/apiFeatures')
-// Creating new products
+// Creating new products (only for admin)
 exports.createProduct = async (req, res) => {
     try {
         req.body.user = req.user.id
@@ -18,7 +18,7 @@ exports.createProduct = async (req, res) => {
         })
     }
 }
-// Updating a existing product
+// Updating a existing product (only for admin)
 exports.updateProduct = async (req, res) => {
     try {
         const { id } = req.params
@@ -79,7 +79,7 @@ exports.fetchProductDetails = async (req, res) => {
         })
     }
 }
-// Deleting a existing product details
+// Deleting a existing product details (only for admin)
 exports.deleteProduct = async (req, res) => {
     try {
         const { id } = req.params

@@ -1,6 +1,8 @@
 const crypto = require("crypto")
 const { is } = require("express/lib/request")
+const { json } = require("express/lib/response")
 const res = require('express/lib/response')
+const { findByIdAndUpdate } = require("../models/userModel")
 const userModel = require('../models/userModel')
 const sendToken = require('../utils/jwtTokenGenerator')
 const sendMail = require('../utils/resetPasswordMail')
@@ -200,7 +202,7 @@ exports.resetPassword = async (req, res) => {
 // get user details
 exports.getUserDetails = async (req, res)=>{
     try {
-        const user = await userModel.findOne({id: req.user._id})
+        const user = await userModel.findOne({_id: req.user._id})
         res.status(200).json({
             success: true, 
             user
@@ -219,14 +221,14 @@ exports.getUserDetails = async (req, res)=>{
 // update user password
 exports.updateUserPassword = async(req, res)=>{
     try {
-        const { oldPassword, newPassword } = req.body
+        const { oldPassword, newPassword, confirmPassword } = req.body
         if(!oldPassword || !newPassword){
             return res.status(400).json({
                 success: false,
                 message: "Please enter old password and the new password"
             })
         }
-        const user = await userModel.findOne({id: req.user._id}).select("+password")
+        const user = await userModel.findOne({_id: req.user._id}).select("+password")
         const isPasswordMatched = await user.matchPassword(oldPassword)
         if(!isPasswordMatched){
             return res.status(400).json({
@@ -234,8 +236,14 @@ exports.updateUserPassword = async(req, res)=>{
                 message: "Invalid old password"
             })
         }
-        user.password = newPassword
+        if(newPassword !== confirmPassword){
+            return res.status(400).json({
+                success: false,
+                message: "Password dose not match"
+            })
+        }
         try {
+            user.password = newPassword
             await user.save()
         } catch (error) {
             return res.status(400).json({
@@ -261,9 +269,83 @@ exports.updateUserPassword = async(req, res)=>{
     }
 }
 
+// update user profile
+exports.updateProfile = async(req, res)=>{
+    try {
+        const { name, email } = req.body
+        let user
+        // we will add cloudinary later
+        try {
+             user = await userModel.findByIdAndUpdate(req.user._id,{ name, email }, {
+                new:true,
+                runValidators:true
+            })
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            })
+        }
+        res.status(200).json({
+            success: true,
+            message: "Profile updated successfully",
+            user
+        })
+    } catch (error) {
+        console.log("Getting error while try to update profile")
+        console.error(error)
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+}
 
 
+// fetch all user details (only for admin)
+exports.fetchAllUserDetails = async(req, res)=>{
+    try {
+        const users = await userModel.find({role:"user"})
+        const usersCount = await userModel.find({role: 'user'}).countDocuments()
+        res.status(200).json({
+            success: true,
+            usersCount,
+            users
+        })
+    } catch (error) {
+        console.log("Getting error while try to fetching all user details");
+        console.error(error)
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+}
 
+// fetch one particular user details (only for admin)
+exports.fetchOneUserDetails = async(req, res)=>{
+    try {
+        const { userId } = req.params
+        const user = await userModel.findById(userId) 
+        if(!user){
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            })
+        } 
+        res.status(200).json({
+            success: true,
+            user
+        })      
+    } catch (error) {
+        console.log("Getting error while try to fetch one particular user details")
+        console.error(error)
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+}
 
 
 
