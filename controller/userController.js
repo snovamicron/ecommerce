@@ -2,7 +2,7 @@ const crypto = require("crypto")
 const { is } = require("express/lib/request")
 const { json } = require("express/lib/response")
 const res = require('express/lib/response')
-const { findByIdAndUpdate } = require("../models/userModel")
+const { findByIdAndUpdate, findOne } = require("../models/userModel")
 const userModel = require('../models/userModel')
 const sendToken = require('../utils/jwtTokenGenerator')
 const sendMail = require('../utils/resetPasswordMail')
@@ -347,7 +347,76 @@ exports.fetchOneUserDetails = async(req, res)=>{
     }
 }
 
+// update user role (only for admin)
+exports.updateUserRole = async (req, res)=> {
+    try {
+        const { email, name, role } = req.body
+        const { userId } = req.params
+        const user = await userModel.findById(userId)
+        if(!user){
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+        })
+        }
+        try {
+            user.email = email,
+            user.name = name,
+            user.role = role
+            await user.save()
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            })
+        }
+        res.status(200).json({
+            success: true,
+            user
+        })
+    } catch (error) {
+        console.log("Getting error while updating the role of a user")
+        console.error(error)
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+}
 
+//Delete user (only for admin)
+exports.deleteUser = async(req, res)=>{
+    try {
+        const { userId } = req.params
+        const user = await userModel.findById(userId)
+        // we will remove cloudinary later
+        if(!user){
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            })
+        }
+        try {
+            await user.remove()
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            })
+        }
+        res.status(200).json({
+            success: true,
+            message: "User deleted successfully"
+        })
+    } catch (error) {
+        console.log("Getting error while try to delete a user")
+        console.error(error)
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+}
 
 
 

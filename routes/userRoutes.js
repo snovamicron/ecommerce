@@ -1,5 +1,5 @@
 const express = require('express')
-const { registerUser, loginUser, logout, forgotPassword, resetPassword, getUserDetails, updateUserPassword, updateProfile, fetchAllUserDetails, fetchOneUserDetails } = require('../controller/userController')
+const { registerUser, loginUser, logout, forgotPassword, resetPassword, getUserDetails, updateUserPassword, updateProfile, fetchAllUserDetails, fetchOneUserDetails, updateUserRole, deleteUser } = require('../controller/userController')
 const authJwtToken = require('../middleware/authJwtToken')
 const authenticateRoles = require('../middleware/authAccessRoles')
 const router = express.Router()
@@ -12,5 +12,5 @@ router.route('/user/me').get(authJwtToken, authenticateRoles('user', 'admin'),ge
 router.route('/user/update/password').put(authJwtToken, authenticateRoles('user', 'admin'), updateUserPassword)
 router.route("/user/update/profile").put(authJwtToken,authenticateRoles('user', 'admin'),updateProfile)
 router.route('/admin/details/users').get(authJwtToken,authenticateRoles('admin'),fetchAllUserDetails)
-router.route('/admin/details/:userId?').get(authJwtToken,authenticateRoles("admin"),fetchOneUserDetails)
+router.route('/admin/control/:userId?').get(authJwtToken,authenticateRoles("admin"),fetchOneUserDetails).put(authJwtToken,authenticateRoles("admin"), updateUserRole).delete(authJwtToken,authenticateRoles("admin"), deleteUser)
 module.exports = router
