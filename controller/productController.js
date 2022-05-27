@@ -1,3 +1,4 @@
+const { findById } = require('../models/productModel')
 const productModel = require('../models/productModel')
 const ApiFeatures = require('../utils/apiFeatures')
 // Creating new products (only for admin)
@@ -131,3 +132,149 @@ exports.getProducts = async (req, res) => {
         })
     }
 }
+
+// create and update a product reviews
+exports.createAndUpdateReviews = async(req, res) => {
+    try {
+        const { rating, comment, productId } = req.body
+        const review = {
+            name: req.user.name,
+            rating: Number(rating),
+            comment,
+            user: req.user._id
+        }
+        const product = await productModel.findById(productId)
+        if(!product){
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            })
+        }
+        const isReviewed = product.reviews.find(rev => rev.user.toString() === req.user._id.toString())
+        if(isReviewed){
+            product.reviews.forEach(rev => {
+                if(rev.user.toString() === req.user._id.toString()){
+                    rev.rating = review.rating
+                    rev.comment = review.comment
+                }
+            })
+        }else{
+            product.reviews.push(review)
+            product.numOfReviews = product.reviews.length
+        }
+        let avg = 0
+        product.reviews.forEach(rev => avg+=rev.rating )
+        product.ratings = avg/product.reviews.length
+        await product.save({ validateBeforeSave: false })
+        res.status(200).json({
+            success: true,
+            message: "Review added successfully"
+        })
+    } catch (error) {
+        console.log("Getting error while try to creating or updating the product reviews")
+        console.error(error)
+        return res.status(500).json({
+            success: false,
+            message : "Internal server error"
+        })
+    }
+}
+
+// get all reviews of a single product
+
+exports.getReviews = async(req, res)=>{
+    try {
+        const { productId } = req.query
+        console.log(productId)
+        const product = await productModel.findById(productId)
+        if(!product){
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            })
+        }
+        res.status(200).json({
+            success: true,
+            reviews: product.reviews
+        })
+    } catch (error) {
+        console.log("Getting error while try to fetch all reviews of the product")
+        console.error(error)
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+}
+
+
+// delete product review
+exports.deleteReview = async(req, res)=>{
+    try {
+        const { productId, id } = req.query
+        const product = await productModel.findById(productId)
+        if(!product){
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            })
+        }
+        if(id){
+            if(!req.user.role === "admin"){
+                return res.status(401).json({
+                    success: false,
+                    message: "You don't have authorization to access this resource"
+                })
+            }else{
+                const reviews = product.reviews.filter(rev => rev._id.toString() !== id)
+                const numOfReviews = reviews.length
+                let avg = 0
+                reviews.forEach(rev => avg+=Number(rev.rating))
+                product.reviews = reviews
+                product.numOfReviews = numOfReviews
+                product.ratings = avg
+                await product.save()
+                return res.status(200).json({
+                    success: true,
+                    message: "Successfully deleted the review"
+                })
+            }
+        }
+        const reviews = product.reviews.filter( rev => rev.user.toString() !== req.user._id.toString())
+        const numOfReviews = reviews.length
+        let avg = 0
+        reviews.forEach(rev => avg+=Number(rev.rating))
+        product.reviews = reviews
+        product.numOfReviews = numOfReviews
+        product.ratings = avg
+        await product.save()
+        res.status(200).json({
+            success: true,
+            message: "successfully deleted the review"
+        })
+    } catch (error) {
+        console.log("Getting error while try to delete won review")
+        console.error(error)
+        return res.status(500).json({
+            success: false,
+            message: "Internal serve error"
+        })
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
