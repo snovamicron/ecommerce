@@ -72,7 +72,7 @@ exports.fetchProductDetails = async (req, res) => {
             product
         })
     } catch (error) {
-        console.log('Getting error while updating a existing product')
+        console.log('Getting error while try to fetch a existing product details')
         console.dir(error)
         res.status(500).json({
             success: false,
@@ -80,7 +80,7 @@ exports.fetchProductDetails = async (req, res) => {
         })
     }
 }
-// Deleting a existing product details (only for admin)
+// Delete a existing product details (only for admin)
 exports.deleteProduct = async (req, res) => {
     try {
         const { id } = req.params
@@ -103,7 +103,7 @@ exports.deleteProduct = async (req, res) => {
             message: 'Deleted the product successfully'
         })
     } catch (error) {
-        console.log('Getting error while updating a exsiting product')
+        console.log('Getting error while delete a existing product')
         console.dir(error)
         res.status(500).json({
             success: false,
@@ -134,7 +134,7 @@ exports.getProducts = async (req, res) => {
 }
 
 // create and update a product reviews
-exports.createAndUpdateReviews = async(req, res) => {
+exports.createAndUpdateReview = async(req, res) => {
     try {
         const { rating, comment, productId } = req.body
         const review = {
@@ -180,8 +180,9 @@ exports.createAndUpdateReviews = async(req, res) => {
     }
 }
 
-// get all reviews of a single product
 
+
+// get all reviews of a single product
 exports.getReviews = async(req, res)=>{
     try {
         const { productId } = req.query
@@ -208,10 +209,12 @@ exports.getReviews = async(req, res)=>{
 }
 
 
+
+
 // delete product review
 exports.deleteReview = async(req, res)=>{
     try {
-        const { productId, id } = req.query
+        const { productId, reviewId } = req.query
         const product = await productModel.findById(productId)
         if(!product){
             return res.status(404).json({
@@ -219,14 +222,14 @@ exports.deleteReview = async(req, res)=>{
                 message: "Product not found"
             })
         }
-        if(id){
-            if(!req.user.role === "admin"){
+        if(reviewId){
+            if(req.user.role !== "admin"){
                 return res.status(401).json({
                     success: false,
                     message: "You don't have authorization to access this resource"
                 })
             }else{
-                const reviews = product.reviews.filter(rev => rev._id.toString() !== id)
+                const reviews = product.reviews.filter(rev => rev._id.toString() !== reviewId)
                 const numOfReviews = reviews.length
                 let avg = 0
                 reviews.forEach(rev => avg+=Number(rev.rating))
