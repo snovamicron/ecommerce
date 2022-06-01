@@ -24,16 +24,16 @@ exports.newOrder = async (req, res)=>{
                 payedAt: Date.now(),
                 user: req.user._id
             })
+            res.status(200).json({
+                success: true,
+                order
+            })
         } catch (error) {
             return res.status(400).json({
                 success: false,
                 message: error.message
             })
         }
-        res.status(200).json({
-            success: true,
-            order
-        })
     } catch (error) {
         console.log("Getting error while try to create a new product")
         console.error(error)
@@ -90,4 +90,121 @@ exports.getSingleOrder = async(req, res)=>{
         })
     }
 }
+
+
+// get all orders (only for admin)
+exports.getOrders = async(req, res)=>{
+    try {
+        const orders = await orderModel.find()
+        let totalPrice = 0
+        orders.forEach(order => totalPrice+=order.totalPrice)
+        res.status(200).json({
+            success: true,
+            totalPrice,
+            orders
+        })
+    } catch (error) {
+        console.log("Getting error while try to fetch all orders details")
+        console.error(error)
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+}
+
+
+// update one order (only for admin)
+exports.updateOrder = async(req, res)=>{
+    try {
+        const order = await orderModel.findById(req.params.id)
+        if(!order){
+            return res.status(404).json({
+                success: false,
+                message: "Order not found with this id"
+            })
+        }
+        if(order.orderStatus === "Delivered"){
+            return res.status(400).json({
+                success: false,
+                message: "You have already delivered this order"
+            })
+        }
+        order.orderItems.forEach(async order => await updateStock(order.product, order.quantity))
+        order.orderStatus = req.body.status
+        if(req.body.status === "Delivered"){
+            order.deliveredAt = Date.now()
+        }
+        try {
+            await order.save({ validateBeforeSave: false })
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            })
+        }
+        res.status(200).json({
+            success: true,
+            message: "Order updated successfully"
+        })
+    } catch (error) {
+        console.log("Getting error while try to update one order details")
+        console.error(error)
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+}
+
+
+async function updateStock(id, quantity){
+    const product = await productModel.findById(id)
+    product.stock-=quantity
+    await product.save({ validateBeforeSave: false })
+}
+
+
+// delete any order (only for admin)
+exports.deleteOrder = async (req, res) => {
+    try {
+        const order = await orderModel.findById(req.params.id)
+        if(!order){
+            return res.status(404).json({
+                success: false,
+                message: "Product not found with this id"
+            })
+        }
+        try {
+            await order.remove()
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            })
+        }
+        res.status(200).json({
+            success: true,
+            message: "Order have removed successfully"
+        })
+    } catch (error) {
+        console.log("Getting error while try to remove a order")
+        console.error(error)
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 
