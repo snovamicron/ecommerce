@@ -1,0 +1,3 @@
+// need to install
+
+axios react-toastify react-helmet react-redux redux redux-thunk redux-devtool-extension react-router-dom overlay-navbar
