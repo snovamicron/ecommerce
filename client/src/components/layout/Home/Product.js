@@ -17,7 +17,7 @@ const Product = ({ product }) => {
                 isHalf={true}
                 /> <span>(500 Reviews)</span>
             </div>
-            <span>{product.price}</span>
+            <span>Price: {product.price}</span>
         </Link>
     )
 }

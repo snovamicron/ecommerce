@@ -53,17 +53,50 @@
     margin: 5vmax auto;
 }
 
+.container{
+    display: flex;
+    margin: 2vmax auto;
+    width: 80vw;
+    flex-wrap: wrap;
+}
 
 .productCard{
-    width:14vmax;
+    width:16vmax;
     display: flex;
     flex-direction: column;
     text-decoration: none;
+    align-items: center;
     margin: 2vmax;
     transition: all 0.5s;
     padding-bottom: 0.5vmax;
 }
 
+
 .productCard > img{
     width: 14vmax;
+}
+.productCard > p{
+    margin: 0 !important;
+}
+
+.productCard > div{
+    display: flex;
+    justify-content: center;
+    margin: 0.5vmax;
+    align-items: center;
+}
+.productCard > div > span{
+    margin: 0.5vmax;
+    font-size: 0.8vmax;
+    font-weight: 800;
+    
+}
+.productCard > span{
+    font-size: 1.2vmax;
+    font-weight: 800;
+    
+}
+.productCard:hover{
+    box-shadow: 0 0 5px rgb(14 1 50 / 50%);
+    transform: translateY(-1vmax);
 }
