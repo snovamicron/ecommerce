@@ -58,6 +58,7 @@
     margin: 2vmax auto;
     width: 80vw;
     flex-wrap: wrap;
+    /* border: 2px solid #000; */
 }
 
 .productCard{
@@ -99,4 +100,35 @@
 .productCard:hover{
     box-shadow: 0 0 5px rgb(14 1 50 / 50%);
     transform: translateY(-1vmax);
+}
+
+@media screen and (max-width: 600px) {
+    .container{
+        width: 100vw;
+    }
+    .productCard{
+        margin: 2vmax auto;
+        width: 18vmax;
+        /* border: 2px solid #000; */
+    }
+    
+    
+    .productCard > img{
+        width: 18vmax;
+    }
+    
+    .productCard > div{
+        display: flex;
+        justify-content: center;
+        margin: 0.5vmax;
+        align-items: center;
+    }
+    .productCard > div > span{
+        font-size: 1vmax;
+        
+    }
+    .productCard > span{
+        font-size: 1.5vmax;
+        
+    }
 }

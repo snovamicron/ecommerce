@@ -12,7 +12,7 @@ const Product = ({ product }) => {
                 <ReactStars
                 edit={false}
                 activeColor="blue"
-                size={ window.innerWidth < 600 ? 20 : 25}
+                size={ window.innerWidth <= 600 ? 17 : 25}
                 value={3.7}
                 isHalf={true}
                 /> <span>(500 Reviews)</span>
