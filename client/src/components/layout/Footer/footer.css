@@ -58,6 +58,37 @@
     margin: 0.5vmax;
 }
 
+@media screen and ( max-width: 600px ) {
+    
+    #leftFooter{
+        text-align: center;
+        font-size: 1.7vmax;
+    }
+    #leftFooter > p{
+        font-size: 1.5vmax;
+    }
+
+
+    #midFooter{
+        font-size: 1.5vmax;
+    }
+    #midFooter > h1{
+        font-size: 2.8vmax;
+    }
+
+
+    #rightFooter{
+        font-size: 1.7vmax;
+    }
+    #rightFooter > div{
+        margin-top: 20px;
+        flex-direction: column;
+    }
+    #rightFooter> div > a > img{
+        width: 4vmax;
+    }
+
+}
 
 
 
