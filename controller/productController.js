@@ -123,7 +123,7 @@ exports.deleteProduct = async (req, res) => {
 // Fetching all products
 exports.getProducts = async (req, res) => {
     try {
-        const resultPerPage = 7
+        const resultPerPage = 8
         const apiFeatures = new ApiFeatures(productModel.find(), req.query).search().filter().pagination(resultPerPage)
         const products = await apiFeatures.query
         const productsCount = await productModel.countDocuments()
