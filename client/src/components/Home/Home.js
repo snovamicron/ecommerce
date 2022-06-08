@@ -19,7 +19,7 @@ const Home = () => {
     const { load, products, productsCount, error } = useSelector(state => state.ProductReducer)
     useEffect(() => {
         dispatch(getProducts())
-    }, [dispatch])
+    }, [dispatch])  
     useEffect(() => {
         if (error) {
             toast.error(error)
