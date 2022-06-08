@@ -13,11 +13,11 @@ const Product = ({ product }) => {
                 edit={false}
                 activeColor="blue"
                 size={ window.innerWidth <= 600 ? 17 : 25}
-                value={3.7}
+                value={product.ratings}
                 isHalf={true}
-                /> <span>(500 Reviews)</span>
+                /> <span>({product.numOfReviews} Reviews)</span>
             </div>
-            <span>Price: {product.price}</span>
+            <span>₹ {product.price}</span>
         </Link>
     )
 }

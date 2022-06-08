@@ -58,7 +58,6 @@
     margin: 2vmax auto;
     width: 80vw;
     flex-wrap: wrap;
-    /* border: 2px solid #000; */
 }
 
 .productCard{
@@ -109,7 +108,7 @@
     .productCard{
         margin: 2vmax auto;
         width: 18vmax;
-        /* border: 2px solid #000; */
+        
     }
     
     
@@ -132,3 +131,5 @@
         
     }
 }
+
+
