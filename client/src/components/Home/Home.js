@@ -16,7 +16,7 @@ import Loader from "../layout/Loader/Loader.js"
 
 const Home = () => {
     const dispatch = useDispatch()
-    const { load, products, productsCount, error } = useSelector(state => state.ProductReducer)
+    const { load, products, productsCount, error } = useSelector(state => state.products)
     useEffect(() => {
         dispatch(getProducts())
     }, [dispatch])  

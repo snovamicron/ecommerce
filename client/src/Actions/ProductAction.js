@@ -3,6 +3,9 @@ import {
     ALL_PRODUCT_REQUEST,
     ALL_PRODUCT_SUCCESS,
     ALL_PRODUCT_FAIL,
+    PRODUCT_DETAILS_REQUEST,
+    PRODUCT_DETAILS_SUCCESS,
+    PRODUCT_DETAILS_FAIL,
     CLEAR_ERRORS
 } from "../Constants/ProductConstants.js"
 
@@ -19,6 +22,24 @@ export const getProducts = () => async (dispatch) => {
         console.log(error.response.data.message);
         dispatch({
             type: ALL_PRODUCT_FAIL,
+            error: error.response.data.message
+        })
+    }
+}
+
+
+export const getProductDetails = (id) => async (dispatch) => {
+    try {
+        dispatch({ type: PRODUCT_DETAILS_REQUEST })
+        const {data} = await axios.get(`/api/v1/product/${id}`)
+        dispatch({
+            type: PRODUCT_DETAILS_SUCCESS,
+            payload: data.product
+        })
+    } catch (error) {
+        console.log(error.response.data.message);
+        dispatch({
+            type: PRODUCT_DETAILS_FAIL,
             error: error.response.data.message
         })
     }
