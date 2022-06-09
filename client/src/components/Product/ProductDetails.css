@@ -106,3 +106,90 @@
     font-size: 1vmax;
     margin: 1vmax 0;
 }
+.detailsBlock-4{ 
+    color: rgba(0, 0, 0, 0.897);
+    font-weight: 500;
+    font-size: 1.2vmax;
+}
+.detailsBlock-4 > p{ 
+    color: rgba(0, 0, 0, 0.897);
+    font-weight: 300;
+    font-size: 0.8vmax;
+}
+.submitReview{
+    border: none;
+    padding: 0.5vmax 2vmax;
+    cursor: pointer;
+    color: white;
+    font-weight: 500;
+    font-size: 1vmax;
+    margin: 1vmax;
+    outline: 1vmax;
+    transition: all 0.5s;
+    background-color: blue;
+    border-radius: 20px;
+}
+.submitReview:hover{
+    background-color: rgb(0, 0, 129);
+    transform: scale(1.1);
+}
+
+@media screen and (max-width: 600px){
+    .productDetails{
+        flex-direction: column;
+    }
+    .productDetails > div:last-child{
+       padding: 1vmax;
+    }
+    .detailsBlock-1{
+        width: 100%;
+    }
+    .detailsBlock-1 > h2{
+        font-size: 3vmax;
+    }
+    .detailsBlock-1 > p{
+        font-size: 1vmax;
+    }
+    .detailsBlock-2 > span{
+        font-size: 1.5vmax;
+    }
+    .detailsBlock-3{
+        width: 100%;
+    }
+    .detailsBlock-3 > h1{ 
+        font-size: 3vmax;
+    }
+    .detailsBlock-3-1-1 > button{
+        padding: 1.5vmax;
+        font-size: 1.8vmax;
+    }
+    .detailsBlock-3-1-1 > button:hover{
+        background-color: rgba(0, 0, 0, 0.767);
+    }
+    .detailsBlock-3-1-1 > input{
+        padding: 1.5vmax;
+        font-size: 1.8vmax;
+    }
+    .detailsBlock-3-1 > button:last-child{
+        padding: 1vmax 3vmax;
+        font-weight: 600;
+        font-size: 1.8vmax;
+    }
+    .detailsBlock-3 > p{ 
+        padding: 1.2vmax 0;
+        font-size: 2vmax;
+    }
+    .detailsBlock-4{ 
+        font-size: 2vmax;
+    }
+    .detailsBlock-4 > p{ 
+        font-weight: 400;
+        font-size: 1.5vmax;
+    }
+    .submitReview{
+        padding: 1.2vmax;
+        font-size: 1.8vmax;
+        border-radius: 30px;
+        margin: 2vmax 0;
+    }
+}

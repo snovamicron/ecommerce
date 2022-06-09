@@ -30,7 +30,7 @@ const ProductDetails = () => {
         <div className="productDetails">
             <div>
             <Carousel
-            width="25vmax"
+            width={ window.innerWidth > 600 ? "25vmax" : "30vmax"}
             showArrows={false}
             showIndicators={false}
             thumbWidth="5vmax"
@@ -56,7 +56,14 @@ const ProductDetails = () => {
                     <p>Product # {product._id}</p>
                 </div>
                 <div className="detailsBlock-2">
-                    <ReactStars/>
+                    <ReactStars
+                    count={5}
+                    edit={false}
+                    activeColor="blue"
+                    value={3.5}
+                    isHalf={true}
+                    size={window.innerWidth > 600 ? 20 : 25}
+                    />
                     <span>( {product.numOfReviews} Reviews )</span>
                 </div>
                 <div className="detailsBlock-3">
