@@ -5,9 +5,12 @@ import "./ProductDetails.css"
 import { useDispatch, useSelector } from "react-redux"
 import { useParams } from "react-router-dom";
 import ReactStars from "react-rating-stars-component"
+import { ToastContainer, toast } from "react-toastify"
+
 
 // components
 import Loader from "../layout/Loader/Loader.js"
+import ReviewCard from "./ReviewCard.js"
 
 // actions
 import { getProductDetails } from "../../Actions/ProductAction"
@@ -20,6 +23,9 @@ const ProductDetails = () => {
         dispatch(getProductDetails(id))
         window.scrollTo(0,0)
     }, [dispatch, id])
+    useEffect(() => {
+        toast.error(error)
+    }, [error])
     return (
         <>
         {
@@ -27,6 +33,10 @@ const ProductDetails = () => {
             <Loader/> 
             :
             <>
+            <ToastContainer 
+            autoClose={2000}
+            theme="dark"
+            />
         <div className="productDetails">
             <div>
             <Carousel
@@ -59,8 +69,8 @@ const ProductDetails = () => {
                     <ReactStars
                     count={5}
                     edit={false}
-                    activeColor="blue"
-                    value={3.5}
+                    activeColor="blue" 
+                    value={product.ratings}
                     isHalf={true}
                     size={window.innerWidth > 600 ? 20 : 25}
                     />
@@ -89,6 +99,16 @@ const ProductDetails = () => {
                 </div>
             </div>
         </div>
+        <h1 className="reviewsHeading">REVIEWS</h1>
+        {
+            product.reviews && product.reviews[0] ? 
+            <div className="reviews">
+                {
+                    product.reviews.map( review => <ReviewCard review = {review} />)
+                }
+            </div> : 
+            <p className="noReviews">No Reviews Yet</p>
+        }
         </>
         }
         </>
