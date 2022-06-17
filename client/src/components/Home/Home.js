@@ -17,6 +17,7 @@ import Loader from "../layout/Loader/Loader.js"
 const Home = () => {
     const dispatch = useDispatch()
     const { load, products, productsCount, error } = useSelector(state => state.products)
+    const productDetails = useSelector(state => state.productDetails)
     useEffect(() => {
         dispatch(getProducts())
     }, [dispatch])  
@@ -24,7 +25,10 @@ const Home = () => {
         if (error) {
             toast.error(error)
         }
-    }, [error])
+        if (productDetails.error) {
+            toast.error(productDetails.error)
+        }
+    }, [error, productDetails.error])
     return (
         <>
             <ToastContainer

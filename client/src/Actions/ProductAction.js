@@ -19,7 +19,6 @@ export const getProducts = () => async (dispatch) => {
             payload: data
         })
     } catch (error) {
-        console.log(error.response.data.message);
         dispatch({
             type: ALL_PRODUCT_FAIL,
             error: error.response.data.message
@@ -37,7 +36,6 @@ export const getProductDetails = (id) => async (dispatch) => {
             payload: data.product
         })
     } catch (error) {
-        console.log(error.response.data.message);
         dispatch({
             type: PRODUCT_DETAILS_FAIL,
             error: error.response.data.message

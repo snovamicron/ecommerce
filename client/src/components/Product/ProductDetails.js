@@ -5,7 +5,7 @@ import "./ProductDetails.css"
 import { useDispatch, useSelector } from "react-redux"
 import { useParams } from "react-router-dom";
 import ReactStars from "react-rating-stars-component"
-import { ToastContainer, toast } from "react-toastify"
+import { useNavigate } from "react-router-dom";
 
 
 // components
@@ -19,24 +19,21 @@ const ProductDetails = () => {
     const { id } = useParams()
     const dispatch = useDispatch()
     const { load, error, product } = useSelector(state => state.productDetails) 
+    const navigate = useNavigate()
     useEffect(() => {
         dispatch(getProductDetails(id))
         window.scrollTo(0,0)
-    }, [dispatch, id])
-    useEffect(() => {
-        toast.error(error)
-    }, [error])
+        if(error){
+            navigate("/")
+        }
+    }, [dispatch, id, error, navigate])
     return (
         <>
         {
             load? 
             <Loader/> 
             :
-            <>
-            <ToastContainer 
-            autoClose={2000}
-            theme="dark"
-            />
+            !error && <>
         <div className="productDetails">
             <div>
             <Carousel
